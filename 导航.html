@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义导航页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: url(./wallhaven-jx13zp.jpg) no-repeat center center fixed;
+            background-size: cover;
+            color: #e0dcdc;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-bottom: 1px solid #2d3047;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #4cc9f0;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: #8d99ae;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: #2d3047;
+            color: #e0e0e0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover {
+            background: #4cc9f0;
+            color: #1a1a2e;
+        }
+        
+        .filter-btn.active {
+            background: #4cc9f0;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .card {
+            background: #16213e;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            padding: 20px;
+            background: #0f3460;
+            border-bottom: 1px solid #2d3047;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            color: #4cc9f0;
+            margin-bottom: 5px;
+        }
+        
+        .card-author {
+            color: #8d99ae;
+            font-size: 0.9rem;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-description {
+            margin-bottom: 15px;
+            color: #b8b8b8;
+        }
+        
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            background: #2d3047;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #8d99ae;
+        }
+        
+        .tag.highlight {
+            background: #4361ee;
+            color: white;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid #2d3047;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #8d99ae;
+        }
+        
+        .update-time {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .resolution-section {
+            margin: 40px 0;
+            padding: 20px;
+            background: #16213e;
+            border-radius: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            color: #4cc9f0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2d3047;
+        }
+        
+        .resolution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .resolution-item {
+            background: #2d3047;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .resolution-item:hover {
+            background: #4cc9f0;
+            color: #1a1a2e;
+        }
+        
+        .category-section {
+            margin: 40px 0;
+        }
+        
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .category-tag {
+            background: #0f3460;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-tag:hover {
+            background: #4cc9f0;
+            color: #1a1a2e;
+        }
+        
+        /* 添加隐藏类 */
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .resolution-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>标题未想好</h1>
+            <p class="subtitle">by ChenlunZheng</p>
+            <p class="subtitle">awid</p>
+        </header>
+        
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="subtitle1">副标题1</button>
+            <button class="filter-btn" data-filter="subtitle2">副标题2</button>
+            <button class="filter-btn" data-filter="subtitle3">副标题3</button>
+            <button class="filter-btn" data-filter="subtitle4">副标题4</button>
+            <button class="filter-btn" data-filter="subtitle5">副标题5</button>
+            <button class="filter-btn" data-filter="category">分类</button>
+        </div>
+        
+        <!-- 副标题1的卡片 -->
+        <div class="card-grid" id="subtitle1-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">副标题1</h2>
+                    <p class="card-author">by LucasLiu</p>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">这是副标题1的详细解释内容</p>
+                    <div class="card-tags">
+                        <span class="tag highlight">☉ 本地化</span>
+                        <span class="tag">☐ 模组</span>
+                        <span class="tag">☐ 实用工具</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <div class="stat">6,341 ◇</div>
+                        <div class="stat">40</div>
+                    </div>
+                    <div class="update-time">更新于2个月前</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 副标题2的卡片 -->
+        <div class="card-grid hidden" id="subtitle2-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">副标题2</h2>
+                    <p class="card-author">by 空星</p>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">这是副标题2的详细解释内容</p>
+                    <div class="card-tags">
+                        <span class="tag">64x</span>
+                        <span class="tag highlight">战斗</span>
+                        <span class="tag">☐ 物品</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <div class="stat">1,114 ◇</div>
+                        <div class="stat">14</div>
+                    </div>
+                    <div class="update-time">更新于5个月前</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 副标题3的卡片 -->
+        <div class="card-grid hidden" id="subtitle3-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">副标题3</h2>
+                    <p class="card-author">by 空星</p>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">这是副标题3的详细解释内容</p>
+                    <div class="card-tags">
+                        <span class="tag">1,395 ◇</span>
+                        <span class="tag">15</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <div class="stat">1,395 ◇</div>
+                        <div class="stat">15</div>
+                    </div>
+                    <div class="update-time">更新于5个月前</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 副标题4的卡片 -->
+        <div class="card-grid hidden" id="subtitle4-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">副标题4</h2>
+                    <p class="card-author">by LoongLv</p>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">这是副标题4的详细解释内容</p>
+                    <div class="card-tags">
+                        <span class="tag">☐ 模组</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <div class="stat">805 ◇</div>
+                        <div class="stat">8</div>
+                    </div>
+                    <div class="update-time">更新于3个月前</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 副标题5的分辨率部分 -->
+        <div class="resolution-section hidden" id="subtitle5-section">
+            <h3 class="section-title">副标题5</h3>
+            <div class="resolution-grid">
+                <div class="resolution-item">128x</div>
+                <div class="resolution-item">16x</div>
+                <div class="resolution-item">256x</div>
+                <div class="resolution-item">32x</div>
+                <div class="resolution-item">48x</div>
+                <div class="resolution-item">512倍+</div>
+                <div class="resolution-item">64x</div>
+                <div class="resolution-item">8x 或更低</div>
+            </div>
+        </div>
+        
+        <!-- 分类部分 -->
+        <div class="category-section hidden" id="category-section">
+            <h3 class="section-title">分类</h3>
+            <div class="category-tags">
+                <div class="category-tag">1</div>
+                <div class="category-tag">2</div>
+                <div class="category-tag">3</div>
+                <div class="category-tag">4</div>
+                <div class="category-tag">5</div>
+                <div class="category-tag">6</div>
+                <div class="category-tag">7</div>
+                <div class="category-tag">8</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有过滤按钮和内容区域
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const allSections = document.querySelectorAll('.card-grid, .resolution-section, .category-section');
+            
+            // 过滤按钮交互
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // 给当前点击的按钮添加active类
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // 隐藏所有区域
+                    allSections.forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    
+                    // 根据过滤条件显示对应的区域
+                    if (filter === 'all') {
+                        // 显示所有区域
+                        allSections.forEach(section => {
+                            section.classList.remove('hidden');
+                        });
+                    } else {
+                        // 显示对应的区域
+                        const targetSection = document.getElementById(`${filter}-section`);
+                        if (targetSection) {
+                            targetSection.classList.remove('hidden');
+                        }
+                    }
+                });
+            });
+            
+            // 分辨率选项交互
+            const resolutionItems = document.querySelectorAll('.resolution-item');
+            resolutionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    resolutionItems.forEach(i => i.style.background = '#2d3047');
+                    resolutionItems.forEach(i => i.style.color = '#e0e0e0');
+                    this.style.background = '#4cc9f0';
+                    this.style.color = '#1a1a2e';
+                });
+            });
+            
+            // 分类标签交互
+            const categoryTags = document.querySelectorAll('.category-tag');
+            categoryTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    categoryTags.forEach(t => t.style.background = '#0f3460');
+                    categoryTags.forEach(t => t.style.color = '#e0e0e0');
+                    this.style.background = '#4cc9f0';
+                    this.style.color = '#1a1a2e';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
